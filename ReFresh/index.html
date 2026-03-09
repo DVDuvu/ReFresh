@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/png" sizes="612x612" href="img.png" />
+        <title>ReFresh - Professional Dry Cleaning</title>
+        <link rel="stylesheet" href="style.css" />
+        <script src="jquery.min.js"></script>
+        <style>
+            /* ===== ЯЗЫКОВАЯ КНОПКА ===== */
+            #lang-btn {
+                position: absolute;
+                top: 25px;
+                right: 30px;
+                width: 50px;
+                height: 50px;
+                background: #ffa500;
+                color: white;
+                border: none;
+                border-radius: 50%;
+                font-size: 26px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+                cursor: pointer;
+                z-index: 100;
+                transition:
+                    background 0.2s,
+                    transform 0.2s;
+            }
+            #lang-btn:hover {
+                background: #ff4500;
+                transform: scale(1.08);
+            }
+            #lang-dropdown {
+                position: absolute;
+                top: 85px;
+                right: 30px;
+                background: white;
+                border: 2px solid #ffa500;
+                border-radius: 10px;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+                display: none;
+                z-index: 101;
+                overflow: hidden;
+            }
+            #lang-dropdown button {
+                display: block;
+                width: 190px;
+                padding: 12px 18px;
+                border: none;
+                background: none;
+                text-align: left;
+                font-size: 15px;
+                cursor: pointer;
+                color: #333;
+            }
+            #lang-dropdown button:hover {
+                background: #fff3d9;
+            }
+
+            /* ===== "Re" тёмно-серый как в aveji.txt ===== */
+            h2.heading span {
+                color: #444;
+            }
+            h2.heading b {
+                color: #ffa500;
+            }
+
+            /* ===== КОРЗИНА ===== */
+            ul#cart-list {
+                width: 100%;
+                max-width: 400px;
+                padding-left: 18px;
+                margin: 6px 0 4px 0;
+            }
+            ul#cart-list li {
+                margin-bottom: 6px;
+                font-size: 1em;
+            }
+            ul#cart-list button {
+                margin-left: 8px;
+                background: #ff4500;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 2px 9px;
+                cursor: pointer;
+                font-size: 0.82em;
+                transition: background 0.2s;
+            }
+            ul#cart-list button:hover {
+                background: #cc3300;
+            }
+
+            /* ===== ГЕО-БЛОК ===== */
+            #geo-loading {
+                display: none;
+                color: #ffa500;
+                font-size: 0.92em;
+                margin: 6px 0 2px 0;
+                text-align: center;
+                width: 100%;
+                max-width: 400px;
+            }
+            #geo-result {
+                display: none;
+                background: rgba(255, 255, 255, 0.9);
+                border: 2px solid #ffa500;
+                border-radius: 8px;
+                padding: 14px 16px;
+                margin-top: 8px;
+                width: 100%;
+                max-width: 400px;
+                box-sizing: border-box;
+                text-align: center;
+            }
+            #geo-result .geo-label {
+                font-size: 0.8em;
+                color: #999;
+                margin-bottom: 2px;
+            }
+            #geo-coords {
+                font-weight: bold;
+                font-size: 1.05em;
+                color: #333;
+                word-break: break-all;
+                margin: 3px 0 8px 0;
+            }
+            #geo-address {
+                font-size: 0.85em;
+                color: #666;
+                margin: 3px 0 12px 0;
+                line-height: 1.4;
+            }
+            #open-maps-btn {
+                display: inline-block;
+                background: #4285f4;
+                color: white !important;
+                padding: 9px 16px;
+                border-radius: 6px;
+                text-decoration: none !important;
+                font-size: 0.92em;
+                font-weight: bold;
+                transition: background 0.2s;
+            }
+            #open-maps-btn:hover {
+                background: #2a6dd9 !important;
+            }
+
+            /* ===== Flex-ряд с кнопкой ===== */
+            .input-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                width: 100%;
+                max-width: 400px;
+                margin-bottom: 15px;
+            }
+            .input-row .box {
+                flex: 1;
+                margin-bottom: 0;
+            }
+            .input-row .btu {
+                white-space: nowrap;
+                flex-shrink: 0;
+                font-size: 1em;
+                padding: 10px 14px;
+            }
+        </style>
+        <script>
+            // ====================== ПЕРЕВОДЧИК ======================
+            var arrLang = {
+                en: {
+                    slogan: "ReFresh – Professional dry cleaning for upholstered furniture, restoring it to its best.",
+                    contact_us_via: "Contact us via",
+                    facebook_profile: "Facebook Profile",
+                    phone_label: "Phone:",
+                    photo_video: "Photo-Video Material",
+                    make_order: "Make an Order",
+                    select_item: "Select Item",
+                    select_to_clean: "Select item to clean",
+                    sofa: "Sofa",
+                    armchair: "Armchair",
+                    mattress: "Mattress",
+                    pouf: "Pouf",
+                    chair: "Chair",
+                    carpet: "Carpet",
+                    add_order: "Add to Order",
+                    order_list: "Order List",
+                    total: "Total:",
+                    your_phone: "Your Phone Number",
+                    phone_placeholder: "Enter your phone number",
+                    region: "Region / Address",
+                    region_placeholder: "Enter your region or address",
+                    get_location: "📍 My Location",
+                    geo_loading: "Detecting location…",
+                    geo_coords_label: "Your coordinates:",
+                    geo_address_label: "Address:",
+                    open_maps: "🗺 Open in Google Maps & Build Route",
+                    your_request: "Your Request",
+                    request_placeholder: "Describe your request (optional)",
+                    make_order_btn: "Make Order",
+                    remove: "Remove",
+                    required: "Please fill out this field",
+                },
+                ru: {
+                    slogan: "ReFresh – Профессиональная химчистка для мягкой мебели, восстанавливая её в лучшем виде.",
+                    contact_us_via: "Свяжитесь с нами через",
+                    facebook_profile: "профиль Facebook",
+                    phone_label: "Телефон:",
+                    photo_video: "Фото-видео материал",
+                    make_order: "Оформить заказ",
+                    select_item: "Выбрать предмет",
+                    select_to_clean: "Выбрать предмет для чистки",
+                    sofa: "Диван",
+                    armchair: "Сав ардель",
+                    mattress: "Матрас",
+                    pouf: "Пуф",
+                    chair: "Стул",
+                    carpet: "Ковёр",
+                    add_order: "Добавить в заказ",
+                    order_list: "Список заказа",
+                    total: "Итого:",
+                    your_phone: "Ваш номер телефона",
+                    phone_placeholder: "Введите ваш номер телефона",
+                    region: "Регион / Адрес",
+                    region_placeholder: "Введите ваш регион или адрес",
+                    get_location: "📍 Моё место",
+                    geo_loading: "Определяю местоположение…",
+                    geo_coords_label: "Ваши координаты:",
+                    geo_address_label: "Адрес:",
+                    open_maps: "🗺 Открыть в Google Maps и маршрут",
+                    your_request: "Ваш запрос",
+                    request_placeholder: "Опишите ваш запрос (необязательно)",
+                    make_order_btn: "Оформить заказ",
+                    remove: "Удалить",
+                    required: "Заполните это поле",
+                },
+                ka: {
+                    slogan: "ReFresh – პროფესიული მშრალი წმენდა რბილი ავეჯისთვის, აღადგენს მას საუკეთესოდ.",
+                    contact_us_via: "დაგვიკავშირდით",
+                    facebook_profile: "Facebook პროფილის მეშვეობით",
+                    phone_label: "ტელეფონი:",
+                    photo_video: "ფოტო-ვიდეო მასალა",
+                    make_order: "შეკვეთის განთავსება",
+                    select_item: "აირჩიეთ პროდუქტი",
+                    select_to_clean: "აირჩიეთ წმენდისთვის",
+                    sofa: "დივანი",
+                    armchair: "სავარძელი",
+                    mattress: "მატრასი",
+                    pouf: "პუფი",
+                    chair: "სკამი",
+                    carpet: "ხალიჩა",
+                    add_order: "დამატება შეკვეთაში",
+                    order_list: "შეკვეთის სია",
+                    total: "სულ:",
+                    your_phone: "თქვენი ტელეფონის ნომერი",
+                    phone_placeholder: "შეიყვანეთ თქვენი ტელეფონის ნომერი",
+                    region: "რეგიონი / მისამართი",
+                    region_placeholder: "შეიყვანეთ თქვენი რეგიონი",
+                    get_location: "📍 ჩემი ადგილი",
+                    geo_loading: "მდებარეობის განსაზღვრა…",
+                    geo_coords_label: "თქვენი კოორდინატები:",
+                    geo_address_label: "მისამართი:",
+                    open_maps: "🗺 Google Maps-ში გახსნა და მარშრუტი",
+                    your_request: "თქვენი მოთხოვნა",
+                    request_placeholder:
+                        "აღწერეთ თქვენი მოთხოვნა (არასავალდებულო)",
+                    make_order_btn: "განათავსეთ შეკვეთა",
+                    remove: "ამოღება",
+                    required: "გთხოვთ შეავსოთ ეს ველი",
+                },
+            };
+
+            var currentLang = "en";
+
+            function translatePage(lang) {
+                if (!arrLang[lang]) lang = "en";
+                currentLang = lang;
+                document.documentElement.lang = lang;
+
+                document.querySelectorAll("[key]").forEach(function (el) {
+                    var key = el.getAttribute("key");
+                    var val = arrLang[lang][key];
+                    if (val === undefined) return;
+                    var tag = el.tagName.toUpperCase();
+                    if (
+                        tag !== "INPUT" &&
+                        tag !== "TEXTAREA" &&
+                        tag !== "SELECT"
+                    ) {
+                        el.textContent = val;
+                    }
+                });
+
+                var pi = document.getElementById("phone_input");
+                var ri = document.getElementById("region");
+                var ta = document.getElementById("request_textarea");
+                if (pi)
+                    pi.placeholder = arrLang[lang]["phone_placeholder"] || "";
+                if (ri)
+                    ri.placeholder = arrLang[lang]["region_placeholder"] || "";
+                if (ta)
+                    ta.placeholder = arrLang[lang]["request_placeholder"] || "";
+
+                document
+                    .querySelectorAll("#item option[key]")
+                    .forEach(function (opt) {
+                        var key = opt.getAttribute("key");
+                        if (arrLang[lang][key])
+                            opt.textContent = arrLang[lang][key];
+                    });
+
+                var mBtn = document.getElementById("open-maps-btn");
+                if (mBtn)
+                    mBtn.textContent =
+                        arrLang[lang]["open_maps"] || mBtn.textContent;
+
+                var requiredMsg = arrLang[lang]["required"] || "";
+                document
+                    .querySelectorAll("#phone_input, #region, #item")
+                    .forEach(function (field) {
+                        field.setCustomValidity("");
+                        field.oninvalid = function () {
+                            field.setCustomValidity(requiredMsg);
+                        };
+                        field.oninput = function () {
+                            field.setCustomValidity("");
+                        };
+                    });
+
+                localStorage.setItem("lang", lang);
+                updateCart();
+            }
+
+            function toggleLanguageDropdown() {
+                var dd = document.getElementById("lang-dropdown");
+                dd.style.display =
+                    dd.style.display === "block" ? "none" : "block";
+            }
+            function changeLang(lang) {
+                translatePage(lang);
+                document.getElementById("lang-dropdown").style.display = "none";
+            }
+            document.addEventListener("click", function (e) {
+                var btn = document.getElementById("lang-btn");
+                var dd = document.getElementById("lang-dropdown");
+                if (
+                    btn &&
+                    dd &&
+                    !btn.contains(e.target) &&
+                    !dd.contains(e.target)
+                )
+                    dd.style.display = "none";
+            });
+
+            // ====================== КОРЗИНА ======================
+            var prices = {
+                Sofa: { min: 100, max: 200 },
+                Armchair: { min: 20, max: 50 },
+                Mattress: { min: 80, max: 100 },
+                Pouf: { min: 15, max: 30 },
+                Chair: { min: 15, max: 20 },
+                Carpet: { min: 50, max: 150 },
+            };
+            var cart = {};
+
+            function addToCart() {
+                var item = document.getElementById("item").value;
+                if (!item) return;
+                if (!cart[item])
+                    cart[item] = { quantity: 1, price: prices[item] };
+                else cart[item].quantity++;
+                updateCart();
+            }
+            function removeFromCart(item) {
+                if (cart[item].quantity > 1) cart[item].quantity--;
+                else delete cart[item];
+                updateCart();
+            }
+            function updateCart() {
+                var cartList = document.getElementById("cart-list");
+                if (!cartList) return;
+                cartList.innerHTML = "";
+                var totalMin = 0,
+                    totalMax = 0;
+                Object.keys(cart).forEach(function (item) {
+                    var d = cart[item];
+                    var sMin = d.quantity * d.price.min;
+                    var sMax = d.quantity * d.price.max;
+                    totalMin += sMin;
+                    totalMax += sMax;
+                    var li = document.createElement("li");
+                    li.innerHTML =
+                        item +
+                        " — " +
+                        sMin +
+                        "–" +
+                        sMax +
+                        "₾ (x" +
+                        d.quantity +
+                        ")" +
+                        " <button onclick=\"removeFromCart('" +
+                        item +
+                        "')\">" +
+                        (arrLang[currentLang]["remove"] || "Remove") +
+                        "</button>";
+                    cartList.appendChild(li);
+                });
+                var totalEl = document.getElementById("total");
+                if (totalEl)
+                    totalEl.textContent =
+                        (arrLang[currentLang]["total"] || "Total:") +
+                        " " +
+                        totalMin +
+                        "–" +
+                        totalMax +
+                        "₾";
+                var od = document.getElementById("order-details");
+                if (od) {
+                    var det = "Order Items:\n";
+                    Object.keys(cart).forEach(function (item) {
+                        var obj = cart[item];
+                        det +=
+                            item +
+                            " x" +
+                            obj.quantity +
+                            " — " +
+                            obj.quantity * obj.price.min +
+                            "–" +
+                            obj.quantity * obj.price.max +
+                            "₾\n";
+                    });
+                    det += "Total: " + totalMin + "–" + totalMax + "₾";
+                    od.value = det;
+                }
+            }
+
+            // ====================== ГЕОЛОКАЦИЯ ======================
+            function getLocation() {
+                var loadEl = document.getElementById("geo-loading");
+                var resEl = document.getElementById("geo-result");
+                if (loadEl) {
+                    loadEl.style.display = "block";
+                    loadEl.textContent =
+                        arrLang[currentLang]["geo_loading"] || "Detecting…";
+                }
+                if (resEl) resEl.style.display = "none";
+                if (!navigator.geolocation) {
+                    if (loadEl) loadEl.style.display = "none";
+                    alert("Geolocation is not supported by this browser.");
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(
+                    function (pos) {
+                        var lat = pos.coords.latitude.toFixed(6);
+                        var lon = pos.coords.longitude.toFixed(6);
+                        if (loadEl) loadEl.style.display = "none";
+                        showGeoResult(lat, lon, "");
+                        var rf = document.getElementById("region");
+                        if (rf) rf.value = lat + ", " + lon;
+                        fetch(
+                            "https://nominatim.openstreetmap.org/reverse?format=json&lat=" +
+                                lat +
+                                "&lon=" +
+                                lon +
+                                "&zoom=18&addressdetails=1",
+                        )
+                            .then(function (r) {
+                                return r.json();
+                            })
+                            .then(function (data) {
+                                var addr = data.display_name || "";
+                                showGeoResult(lat, lon, addr);
+                                if (rf && addr) rf.value = addr;
+                            })
+                            .catch(function () {});
+                    },
+                    function (err) {
+                        if (loadEl) loadEl.style.display = "none";
+                        alert("Geolocation error: " + err.message);
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
+                );
+            }
+
+            function showGeoResult(lat, lon, address) {
+                var resEl = document.getElementById("geo-result");
+                var coordEl = document.getElementById("geo-coords");
+                var addrEl = document.getElementById("geo-address");
+                var mBtn = document.getElementById("open-maps-btn");
+                if (!resEl) return;
+                if (coordEl) coordEl.textContent = lat + ", " + lon;
+                if (addrEl) addrEl.textContent = address;
+                var mapsUrl =
+                    "https://www.google.com/maps/dir/?api=1&destination=" +
+                    lat +
+                    "," +
+                    lon +
+                    "&travelmode=driving";
+                if (mBtn) {
+                    mBtn.href = mapsUrl;
+                    mBtn.textContent =
+                        arrLang[currentLang]["open_maps"] || "🗺 Google Maps";
+                }
+                resEl.style.display = "block";
+            }
+
+            window.addEventListener("DOMContentLoaded", function () {
+                var saved = localStorage.getItem("lang") || "en";
+                translatePage(saved);
+            });
+        </script>
+    </head>
+    <body>
+        <section class="contacts" style="position: relative">
+            <button id="lang-btn" onclick="toggleLanguageDropdown()">🌐</button>
+            <div id="lang-dropdown">
+                <button onclick="changeLang('en')">🇬🇧 English</button>
+                <button onclick="changeLang('ru')">🇷🇺 Русский</button>
+                <button onclick="changeLang('ka')">🇬🇪 ქართული</button>
+            </div>
+
+            <h2 class="heading"><span>Re</span><b>Fresh</b></h2>
+            <p class="lang" key="slogan">
+                ReFresh – Professional dry cleaning for upholstered furniture,
+                restoring it to its best.
+            </p>
+            <hr />
+            <div class="row">
+                <img src="img.jpg" alt="ReFresh Logo" />
+                <hr />
+            </div>
+            <p>
+                <span class="lang" key="contact_us_via">Contact us via</span>
+                <a
+                    href="https://www.facebook.com/profile.php?id=61585323945541"
+                    class="lang"
+                    key="facebook_profile"
+                    >Facebook Profile</a
+                >
+            </p>
+            <p>
+                <a href="indexx.html" class="lang" key="photo_video"
+                    >Photo-Video Material</a
+                >
+            </p>
+            <p>
+                <span class="lang" key="phone_label">Phone:</span> 598-60-64-20
+            </p>
+            <hr />
+            <h3 class="lang" key="make_order">Make an Order</h3>
+
+            <form action="https://api.web3forms.com/submit" method="POST">
+                <input
+                    type="hidden"
+                    name="access_key"
+                    value="37609ed9-0d2e-4a87-9b2f-3b3879e97d7f"
+                />
+                <input
+                    type="hidden"
+                    id="order-details"
+                    name="order_details"
+                    value=""
+                />
+
+                <span class="lang" key="select_item">Select Item</span>
+                <div class="input-row">
+                    <select name="item" id="item" class="box" required>
+                        <option
+                            value=""
+                            disabled
+                            selected
+                            key="select_to_clean"
+                        >
+                            Select item to clean
+                        </option>
+                        <option value="Sofa" key="sofa">Sofa</option>
+                        <option value="Armchair" key="armchair">
+                            Armchair
+                        </option>
+                        <option value="Mattress" key="mattress">
+                            Mattress
+                        </option>
+                        <option value="Pouf" key="pouf">Pouf</option>
+                        <option value="Chair" key="chair">Chair</option>
+                        <option value="Carpet" key="carpet">Carpet</option>
+                    </select>
+                    <button
+                        type="button"
+                        onclick="addToCart()"
+                        class="btu lang"
+                        key="add_order"
+                    >
+                        Add to Order
+                    </button>
+                </div>
+
+                <span class="lang" key="order_list">Order List</span>
+                <ul id="cart-list"></ul>
+                <p id="total" style="font-weight: bold">Total: 0–0₾</p>
+
+                <span class="lang" key="your_phone">Your Phone Number</span>
+                <input
+                    type="tel"
+                    name="phone"
+                    id="phone_input"
+                    class="box"
+                    required
+                    placeholder="Enter your phone number"
+                    autocomplete="off"
+                    oninput="
+                        this.value = this.value.replace(/[^0-9+\-\s]/g, '')
+                    "
+                />
+
+                <span class="lang" key="region">Region / Address</span>
+                <div class="input-row">
+                    <input
+                        type="text"
+                        name="region"
+                        id="region"
+                        class="box"
+                        required
+                        placeholder="Enter your region or address"
+                        autocomplete="off"
+                    />
+                    <button
+                        type="button"
+                        onclick="getLocation()"
+                        class="btu lang"
+                        key="get_location"
+                    >
+                        📍 My Location
+                    </button>
+                </div>
+                <div id="geo-loading">Detecting location…</div>
+                <div id="geo-result">
+                    <div class="geo-label lang" key="geo_coords_label">
+                        Your coordinates:
+                    </div>
+                    <div id="geo-coords"></div>
+                    <div
+                        class="geo-label lang"
+                        key="geo_address_label"
+                        style="margin-top: 8px"
+                    >
+                        Address:
+                    </div>
+                    <div id="geo-address"></div>
+                    <a id="open-maps-btn" href="#" target="_blank"
+                        >🗺 Open in Google Maps &amp; Build Route</a
+                    >
+                </div>
+
+                <span class="lang" key="your_request">Your Request</span>
+                <textarea
+                    name="request"
+                    id="request_textarea"
+                    class="box"
+                    placeholder="Describe your request (optional)"
+                    rows="5"
+                    autocomplete="off"
+                ></textarea>
+
+                <button
+                    type="submit"
+                    class="btu lang"
+                    key="make_order_btn"
+                    style="width: 100%; max-width: 400px; margin-top: 10px"
+                >
+                    Make Order
+                </button>
+            </form>
+        </section>
+    </body>
+</html>
