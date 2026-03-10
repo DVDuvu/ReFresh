@@ -8,7 +8,6 @@
         <link rel="stylesheet" href="style.css" />
         <script src="jquery.min.js"></script>
         <style>
-            /* ===== ЯЗЫКОВАЯ КНОПКА ===== */
             #lang-btn {
                 position: absolute;
                 top: 25px;
@@ -60,8 +59,6 @@
             #lang-dropdown button:hover {
                 background: #fff3d9;
             }
-
-            /* ===== "Re" тёмно-серый как в aveji.txt ===== */
             h2.heading span {
                 color: #444;
             }
@@ -69,7 +66,7 @@
                 color: #ffa500;
             }
 
-            /* ===== КОРЗИНА ===== */
+            /* КОРЗИНА */
             ul#cart-list {
                 width: 100%;
                 max-width: 400px;
@@ -89,13 +86,12 @@
                 padding: 2px 9px;
                 cursor: pointer;
                 font-size: 0.82em;
-                transition: background 0.2s;
             }
             ul#cart-list button:hover {
                 background: #cc3300;
             }
 
-            /* ===== ГЕО-БЛОК ===== */
+            /* ГЕО */
             #geo-loading {
                 display: none;
                 color: #ffa500;
@@ -150,7 +146,63 @@
                 background: #2a6dd9 !important;
             }
 
-            /* ===== Flex-ряд с кнопкой ===== */
+            /* ФОТО */
+            #photo-section {
+                width: 100%;
+                max-width: 400px;
+                margin-bottom: 15px;
+            }
+            #photo-label {
+                display: inline-block;
+                background: #ffa500;
+                color: white;
+                padding: 10px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 1em;
+                transition: background 0.2s;
+                margin-bottom: 8px;
+            }
+            #photo-label:hover {
+                background: #ff4500;
+            }
+            #photo-input {
+                display: none;
+            }
+            #photo-preview {
+                display: none;
+                width: 100%;
+                max-height: 200px;
+                object-fit: contain;
+                border-radius: 8px;
+                border: 2px solid #ffa500;
+                margin-top: 8px;
+            }
+            #photo-error {
+                display: none;
+                color: #ff4500;
+                font-size: 0.88em;
+                margin-top: 6px;
+            }
+            #photo-hint {
+                font-size: 0.82em;
+                color: #888;
+                margin-top: 4px;
+                font-weight: normal;
+            }
+            #photo-remove {
+                display: none;
+                background: none;
+                border: none;
+                color: #ff4500;
+                cursor: pointer;
+                font-size: 0.88em;
+                margin-top: 4px;
+                text-decoration: underline;
+                padding: 0;
+            }
+
+            /* FLEX РЯД */
             .input-row {
                 display: flex;
                 align-items: center;
@@ -171,7 +223,6 @@
             }
         </style>
         <script>
-            // ====================== ПЕРЕВОДЧИК ======================
             var arrLang = {
                 en: {
                     slogan: "ReFresh – Professional dry cleaning for upholstered furniture, restoring it to its best.",
@@ -183,6 +234,7 @@
                     select_item: "Select Item",
                     select_to_clean: "Select item to clean",
                     sofa: "Sofa",
+                    corner_sofa: "Corner Sofa",
                     armchair: "Armchair",
                     mattress: "Mattress",
                     pouf: "Pouf",
@@ -202,6 +254,12 @@
                     open_maps: "🗺 Open in Google Maps & Build Route",
                     your_request: "Your Request",
                     request_placeholder: "Describe your request (optional)",
+                    attach_photo: "📎 Attach Photo (optional)",
+                    photo_hint:
+                        "Photo helps estimate the price more accurately",
+                    photo_remove: "✕ Remove photo",
+                    photo_error_type: "Only images allowed (JPG, PNG, etc.)",
+                    photo_error_size: "File too large. Max 10MB.",
                     make_order_btn: "Make Order",
                     remove: "Remove",
                     required: "Please fill out this field",
@@ -216,6 +274,7 @@
                     select_item: "Выбрать предмет",
                     select_to_clean: "Выбрать предмет для чистки",
                     sofa: "Диван",
+                    corner_sofa: "Угловой диван",
                     armchair: "Сав ардель",
                     mattress: "Матрас",
                     pouf: "Пуф",
@@ -235,6 +294,12 @@
                     open_maps: "🗺 Открыть в Google Maps и маршрут",
                     your_request: "Ваш запрос",
                     request_placeholder: "Опишите ваш запрос (необязательно)",
+                    attach_photo: "📎 Прикрепить фото (необязательно)",
+                    photo_hint: "Фото поможет точнее оценить стоимость",
+                    photo_remove: "✕ Удалить фото",
+                    photo_error_type:
+                        "Разрешены только изображения (JPG, PNG и др.)",
+                    photo_error_size: "Файл слишком большой. Максимум 10МБ.",
                     make_order_btn: "Оформить заказ",
                     remove: "Удалить",
                     required: "Заполните это поле",
@@ -249,6 +314,7 @@
                     select_item: "აირჩიეთ პროდუქტი",
                     select_to_clean: "აირჩიეთ წმენდისთვის",
                     sofa: "დივანი",
+                    corner_sofa: "კუთხის დივანი",
                     armchair: "სავარძელი",
                     mattress: "მატრასი",
                     pouf: "პუფი",
@@ -269,6 +335,13 @@
                     your_request: "თქვენი მოთხოვნა",
                     request_placeholder:
                         "აღწერეთ თქვენი მოთხოვნა (არასავალდებულო)",
+                    attach_photo: "📎 ფოტოს მიმაგრება (არასავალდებულო)",
+                    photo_hint:
+                        "ფოტო დაგვეხმარება ფასის უფრო ზუსტად განსაზღვრაში",
+                    photo_remove: "✕ ფოტოს წაშლა",
+                    photo_error_type:
+                        "მხოლოდ სურათები დაშვებულია (JPG, PNG და სხვ.)",
+                    photo_error_size: "ფაილი ძალიან დიდია. მაქსიმუმ 10MB.",
                     make_order_btn: "განათავსეთ შეკვეთა",
                     remove: "ამოღება",
                     required: "გთხოვთ შეავსოთ ეს ველი",
@@ -281,7 +354,6 @@
                 if (!arrLang[lang]) lang = "en";
                 currentLang = lang;
                 document.documentElement.lang = lang;
-
                 document.querySelectorAll("[key]").forEach(function (el) {
                     var key = el.getAttribute("key");
                     var val = arrLang[lang][key];
@@ -291,11 +363,9 @@
                         tag !== "INPUT" &&
                         tag !== "TEXTAREA" &&
                         tag !== "SELECT"
-                    ) {
+                    )
                         el.textContent = val;
-                    }
                 });
-
                 var pi = document.getElementById("phone_input");
                 var ri = document.getElementById("region");
                 var ta = document.getElementById("request_textarea");
@@ -305,7 +375,6 @@
                     ri.placeholder = arrLang[lang]["region_placeholder"] || "";
                 if (ta)
                     ta.placeholder = arrLang[lang]["request_placeholder"] || "";
-
                 document
                     .querySelectorAll("#item option[key]")
                     .forEach(function (opt) {
@@ -313,12 +382,10 @@
                         if (arrLang[lang][key])
                             opt.textContent = arrLang[lang][key];
                     });
-
                 var mBtn = document.getElementById("open-maps-btn");
                 if (mBtn)
                     mBtn.textContent =
                         arrLang[lang]["open_maps"] || mBtn.textContent;
-
                 var requiredMsg = arrLang[lang]["required"] || "";
                 document
                     .querySelectorAll("#phone_input, #region, #item")
@@ -331,7 +398,6 @@
                             field.setCustomValidity("");
                         };
                     });
-
                 localStorage.setItem("lang", lang);
                 updateCart();
             }
@@ -357,14 +423,15 @@
                     dd.style.display = "none";
             });
 
-            // ====================== КОРЗИНА ======================
+            // ====================== ЦЕНЫ (обновлены) ======================
             var prices = {
-                Sofa: { min: 100, max: 200 },
+                Sofa: { min: 50, max: 100 },
+                CornerSofa: { min: 80, max: 150 },
                 Armchair: { min: 20, max: 50 },
-                Mattress: { min: 80, max: 100 },
-                Pouf: { min: 15, max: 30 },
-                Chair: { min: 15, max: 20 },
-                Carpet: { min: 50, max: 150 },
+                Mattress: { min: 50, max: 100 },
+                Pouf: { min: 20, max: 40 },
+                Chair: { min: 10, max: 20 },
+                Carpet: { min: 10, max: 150 },
             };
             var cart = {};
 
@@ -437,6 +504,66 @@
                     det += "Total: " + totalMin + "–" + totalMax + "₾";
                     od.value = det;
                 }
+            }
+
+            // ====================== ФОТО С ЦЕНЗУРОЙ ======================
+            var selectedPhotoBase64 = "";
+
+            function handlePhotoSelect(input) {
+                var errEl = document.getElementById("photo-error");
+                var preview = document.getElementById("photo-preview");
+                var removeBtn = document.getElementById("photo-remove");
+                var photoData = document.getElementById("photo-data");
+                errEl.style.display = "none";
+                preview.style.display = "none";
+                removeBtn.style.display = "none";
+                selectedPhotoBase64 = "";
+                if (photoData) photoData.value = "";
+
+                if (!input.files || !input.files[0]) return;
+                var file = input.files[0];
+
+                // Проверка типа — только изображения
+                if (!file.type.startsWith("image/")) {
+                    errEl.textContent =
+                        arrLang[currentLang]["photo_error_type"];
+                    errEl.style.display = "block";
+                    input.value = "";
+                    return;
+                }
+                // Проверка размера — максимум 10МБ
+                if (file.size > 10 * 1024 * 1024) {
+                    errEl.textContent =
+                        arrLang[currentLang]["photo_error_size"];
+                    errEl.style.display = "block";
+                    input.value = "";
+                    return;
+                }
+
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    // Показываем превью
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                    removeBtn.style.display = "inline-block";
+                    // Сохраняем имя файла в скрытое поле для отправки формы
+                    if (photoData)
+                        photoData.value =
+                            file.name +
+                            " (" +
+                            Math.round(file.size / 1024) +
+                            " KB)";
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function removePhoto() {
+                document.getElementById("photo-input").value = "";
+                document.getElementById("photo-preview").style.display = "none";
+                document.getElementById("photo-remove").style.display = "none";
+                document.getElementById("photo-error").style.display = "none";
+                var pd = document.getElementById("photo-data");
+                if (pd) pd.value = "";
             }
 
             // ====================== ГЕОЛОКАЦИЯ ======================
@@ -554,7 +681,11 @@
             <hr />
             <h3 class="lang" key="make_order">Make an Order</h3>
 
-            <form action="https://api.web3forms.com/submit" method="POST">
+            <form
+                action="https://api.web3forms.com/submit"
+                method="POST"
+                enctype="multipart/form-data"
+            >
                 <input
                     type="hidden"
                     name="access_key"
@@ -564,6 +695,12 @@
                     type="hidden"
                     id="order-details"
                     name="order_details"
+                    value=""
+                />
+                <input
+                    type="hidden"
+                    id="photo-data"
+                    name="photo_info"
                     value=""
                 />
 
@@ -579,6 +716,9 @@
                             Select item to clean
                         </option>
                         <option value="Sofa" key="sofa">Sofa</option>
+                        <option value="CornerSofa" key="corner_sofa">
+                            Corner Sofa
+                        </option>
                         <option value="Armchair" key="armchair">
                             Armchair
                         </option>
@@ -662,15 +802,47 @@
                     id="request_textarea"
                     class="box"
                     placeholder="Describe your request (optional)"
-                    rows="5"
+                    rows="4"
                     autocomplete="off"
                 ></textarea>
+
+                <!-- ФОТО -->
+                <div id="photo-section">
+                    <label
+                        id="photo-label"
+                        for="photo-input"
+                        class="lang"
+                        key="attach_photo"
+                        >📎 Attach Photo (optional)</label
+                    >
+                    <input
+                        type="file"
+                        id="photo-input"
+                        name="photo"
+                        accept="image/*"
+                        onchange="handlePhotoSelect(this)"
+                    />
+                    <div id="photo-hint" class="lang" key="photo_hint">
+                        Photo helps estimate the price more accurately
+                    </div>
+                    <div id="photo-error"></div>
+                    <img id="photo-preview" src="" alt="preview" />
+                    <button
+                        type="button"
+                        id="photo-remove"
+                        onclick="removePhoto()"
+                        class="lang"
+                        key="photo_remove"
+                    >
+                        ✕ Remove photo
+                    </button>
+                </div>
 
                 <button
                     type="submit"
                     class="btu lang"
                     key="make_order_btn"
-                    style="width: 100%; max-width: 400px; margin-top: 10px"
+                    style="width: 100%; max-width: 400px; margin-top: 5px"
                 >
                     Make Order
                 </button>

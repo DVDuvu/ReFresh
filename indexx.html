@@ -8,7 +8,6 @@
         <link rel="stylesheet" href="style.css" />
         <script src="jquery.min.js"></script>
 
-        <!-- Facebook SDK — нужен для Page Plugin -->
         <div id="fb-root"></div>
         <script
             async
@@ -75,6 +74,12 @@
             h2.heading b {
                 color: #ffa500;
             }
+
+            /* Растягиваем секцию шире для Facebook */
+            section.contacts {
+                max-width: 780px !important;
+            }
+
             .fb-page-wrapper {
                 display: flex;
                 justify-content: center;
@@ -82,7 +87,12 @@
                 width: 100%;
                 overflow: hidden;
             }
-            .fb-page-wrapper .fb_iframe_widget {
+            /* Убираем ограничение ширины iframe от Facebook */
+            .fb-page-wrapper > span,
+            .fb-page-wrapper .fb_iframe_widget,
+            .fb-page-wrapper .fb_iframe_widget span,
+            .fb-page-wrapper .fb_iframe_widget iframe {
+                width: 100% !important;
                 max-width: 100% !important;
             }
         </style>
@@ -156,20 +166,20 @@
             });
 
             function resizeFbPlugin() {
-                var container = document.querySelector(".fb-page-wrapper");
-                if (!container) return;
-                var w = Math.min(container.offsetWidth - 10, 500);
+                var wrapper = document.querySelector(".fb-page-wrapper");
                 var plugin = document.querySelector(".fb-page");
-                if (plugin) {
-                    plugin.setAttribute("data-width", w);
-                    if (window.FB) window.FB.XFBML.parse();
-                }
+                if (!wrapper || !plugin) return;
+                // Максимум 680px, минимум 180px (ограничение Facebook)
+                var w = Math.min(Math.max(wrapper.offsetWidth - 4, 180), 680);
+                plugin.setAttribute("data-width", w);
+                if (window.FB) window.FB.XFBML.parse();
             }
 
             window.addEventListener("DOMContentLoaded", function () {
                 var saved = localStorage.getItem("lang") || "en";
                 translatePage(saved);
-                resizeFbPlugin();
+                // Ждём загрузки SDK потом ресайзим
+                setTimeout(resizeFbPlugin, 1500);
             });
             window.addEventListener("resize", function () {
                 resizeFbPlugin();
@@ -229,8 +239,8 @@
                     class="fb-page"
                     data-href="https://www.facebook.com/profile.php?id=61585323945541"
                     data-tabs="timeline"
-                    data-width="500"
-                    data-height="800"
+                    data-width="680"
+                    data-height="900"
                     data-small-header="false"
                     data-adapt-container-width="true"
                     data-hide-cover="false"
